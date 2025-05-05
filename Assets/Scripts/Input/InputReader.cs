@@ -8,6 +8,7 @@ public class InputReader : ScriptableObject, IPlayerActions
 {
     public event Action<Vector2> OnMoveEvent;
     public event Action<bool> OnPrimaryFireEvent;
+    public Vector2 AimPosition {get; private set;}
     private Controls controls;
     private void OnEnable(){
         if (controls == null)
@@ -37,5 +38,11 @@ public class InputReader : ScriptableObject, IPlayerActions
         controls.Player.Disable();
         controls.Player.SetCallbacks(null);
         controls = null;
+    }
+
+    public void OnAim(InputAction.CallbackContext context)
+    {
+        // we are setting it to a variable that we can read instead of an event, because the number of times this will be triggered makes it more performant this way
+        AimPosition = context.ReadValue<Vector2>();
     }
 }
