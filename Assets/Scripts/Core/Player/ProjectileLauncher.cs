@@ -29,14 +29,31 @@ public class ProjectileLauncher : NetworkBehaviour
     {
         if(!IsOwner){return;}
         if(!shouldFire) return;
-        SpawnDummyProjectile();
+        
+        PrimaryFireServerRpc(projectSpawnPoint.position, projectSpawnPoint.up);
+        SpawnDummyProjectile(projectSpawnPoint.position, projectSpawnPoint.up);
+
     }
     private void HandlePrimaryFire(bool fired){
         shouldFire = fired;
     }
 
-    private void SpawnDummyProjectile(){
-        GameObject projectile = Instantiate(clientProjectilePrefab, projectSpawnPoint.position, Quaternion.identity);
-        projectile.transform.up = projectSpawnPoint.up;
+    private void SpawnDummyProjectile(Vector3 spawnPosition, Vector3 spawnDirection){
+        GameObject projectile = Instantiate(clientProjectilePrefab, spawnPosition, Quaternion.identity);
+        projectile.transform.up = spawnDirection;
+    }
+
+    [ServerRpc] // the function must end in ServerRpc
+    private void PrimaryFireServerRpc(Vector3 spawnPosition, Vector3 spawnDirection){
+        GameObject projectile = Instantiate(serverProjectilePrefab, spawnPosition, Quaternion.identity);
+        projectile.transform.up = spawnDirection;
+        SpawnDummyProjectileClientRpc(spawnPosition, spawnDirection);
+    }
+
+    [ClientRpc]
+    private void SpawnDummyProjectileClientRpc(Vector3 spawnPosition, Vector3 spawnDirection){
+        if(IsOwner) return;
+
+        SpawnDummyProjectile(spawnPosition, spawnDirection);
     }
 }
