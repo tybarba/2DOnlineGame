@@ -1,16 +1,19 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class CoinWallet : MonoBehaviour
+public class CoinWallet : NetworkBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public NetworkVariable<int> TotalCoins = new();
+
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if(!collision.TryGetComponent<Coin>(out Coin coin)) return;
+
+        int coinValue = coin.Collect();
+
+        if(!IsServer) return;
+
+        TotalCoins.Value += coinValue;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
