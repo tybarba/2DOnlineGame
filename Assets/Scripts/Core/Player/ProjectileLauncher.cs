@@ -11,15 +11,17 @@ public class ProjectileLauncher : NetworkBehaviour
     [SerializeField] private InputReader inputReader;
     [SerializeField] private GameObject muzzleFlash;
     [SerializeField] private Collider2D playerCollider;
+    [SerializeField] private CoinWallet coinWallet;
 
     [Header("Settings")]
     [SerializeField, Range(0f, 100f)] private float projectileSpeed;
     [SerializeField, Range(0f, 10f)] private float fireRate;
     [SerializeField, Range(0f, 10f)] private float muzzleFlashDuration;
+    [SerializeField, Range(0f, 10f)] private int costToFire;
 
     private bool shouldFire = false;
-    private float previousFireTime;
     private float muzzleFlashTimer;
+    private float timer;
 
     // Connect and disconnect from events
     public override void OnNetworkSpawn()
@@ -44,14 +46,19 @@ public class ProjectileLauncher : NetworkBehaviour
         }
 
         if(!IsOwner){return;}
+
+        if(timer > 0) timer -= Time.deltaTime;
+
         if(!shouldFire) return;
 
-        if(Time.time < (1 / fireRate) + previousFireTime) return; // To stop cheating, we could validate this in the server. But since we're already trusting client position, we're going to trust this too.
+        if(timer > 0) return; // To stop cheating, we could validate this in the server. But since we're already trusting client position, we're going to trust this too.
+
+        if(coinWallet.TotalCoins.Value < costToFire) return;
 
         PrimaryFireServerRpc(projectSpawnPoint.position, projectSpawnPoint.up);
         SpawnDummyProjectile(projectSpawnPoint.position, projectSpawnPoint.up);
 
-        previousFireTime = Time.time;
+        timer = 1/fireRate; // cooldown of fire rate
     }
     private void HandlePrimaryFire(bool fired){
         shouldFire = fired;
@@ -73,6 +80,8 @@ public class ProjectileLauncher : NetworkBehaviour
 
     [ServerRpc] // the function must end in ServerRpc
     private void PrimaryFireServerRpc(Vector3 spawnPosition, Vector3 spawnDirection){
+        // get coin wallet from projectile 
+        coinWallet.TrySpendCoins(costToFire);
         FireProjectile(serverProjectilePrefab, spawnPosition, spawnDirection);
 
         SpawnDummyProjectileClientRpc(spawnPosition, spawnDirection);
