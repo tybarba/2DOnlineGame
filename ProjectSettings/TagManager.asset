@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -11,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Projectile
+  - Pickup
   - 
   - 
   - 
@@ -38,6 +38,20 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 758232395
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Terrain
+    uniqueID: 1161829115
+    locked: 0
+  - name: Coin
+    uniqueID: 978163913
+    locked: 0
+  - name: Player
+    uniqueID: 2627902549
+    locked: 0
+  m_RenderingLayers:
+  - Default
