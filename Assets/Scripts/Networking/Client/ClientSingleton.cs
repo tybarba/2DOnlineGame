@@ -5,7 +5,7 @@ using UnityEngine;
 public class ClientSingleton : MonoBehaviour
 {
     private static ClientSingleton instance;
-    private ClientGameManager gameManager;
+    public ClientGameManager GameManager {get; private set;}
     public static ClientSingleton Instance{
         get{
             if( instance != null){ return instance;} // if it's already been instantiated, provide the object
@@ -25,8 +25,8 @@ public class ClientSingleton : MonoBehaviour
         DontDestroyOnLoad(gameObject);   
     }
 
-    public async Task CreateClient(){
-        gameManager = new ClientGameManager();
-        await gameManager.InitAsync();
+    public async Task<bool> CreateClient(){
+        GameManager = new ClientGameManager();
+        return await GameManager.InitAsync();
     }
 }
