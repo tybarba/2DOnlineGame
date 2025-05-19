@@ -14,21 +14,31 @@ public class ApplicationController : MonoBehaviour
         await LaunchInMode(isDedicatedServer);
     }
 
-    private async Task LaunchInMode(bool isDedicatedServer){
-        if(isDedicatedServer){
+    private async Task LaunchInMode(bool isDedicatedServer)
+    {
+        if (isDedicatedServer)
+        {
 
-        }else{
-            //spawn in client singleton
-            ClientSingleton clientSingleton = Instantiate(clientPrefab);
-            bool authenticated = await clientSingleton.CreateClient();
+        }
+        else
+        {
+            // spawning this first so it has time to  load(probably not the most reliable option)
             // spawn inhost singleton
             HostSingleton hostSingleton = Instantiate(hostPrefab);
             hostSingleton.CreateHost();
 
-            if(authenticated){
+            //spawn in client singleton
+            ClientSingleton clientSingleton = Instantiate(clientPrefab);
+            bool authenticated = await clientSingleton.CreateClient();
+
+
+            if (authenticated)
+            {
                 // go to main menu
                 clientSingleton.GameManager.GoToMenu();
-            }else{
+            }
+            else
+            {
                 // handle the error as you wish
             }
         }
